@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Simulate API call
         setTimeout(() => {
             submitBtn.classList.remove('loading');
-            submitBtn.style.background = '#10b981'; // Success color
+            submitBtn.style.background = '#27272a'; // Success color (Greyscale)
             submitBtn.innerHTML = '<span class="btn-text">Success!</span>';
 
             console.log('Login attempt with:', {
