@@ -1,13 +1,13 @@
 :root {
-    --primary-color: #6366f1;
-    --primary-hover: #4f46e5;
-    --bg-color: #f8fafc;
+    --primary-color: #3f3f46;
+    --primary-hover: #18181b;
+    --bg-color: #fafafa;
     --card-bg: #ffffff;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --input-bg: #fdfdfd;
-    --input-border: #e2e8f0;
-    --input-focus: #c7d2fe;
+    --text-main: #27272a;
+    --text-muted: #71717a;
+    --input-bg: #ffffff;
+    --input-border: #e4e4e7;
+    --input-focus: #d4d4d8;
     --white: #ffffff;
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
@@ -15,13 +15,13 @@
 }
 
 [data-theme="dark"] {
-    --bg-color: #0f172a;
-    --card-bg: #1e293b;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --input-bg: #0f172a;
-    --input-border: #334155;
-    --input-focus: #1e293b;
+    --bg-color: #09090b;
+    --card-bg: #18181b;
+    --text-main: #f4f4f5;
+    --text-muted: #a1a1aa;
+    --input-bg: #09090b;
+    --input-border: #27272a;
+    --input-focus: #3f3f46;
 }
 
 .theme-toggle {
@@ -99,6 +99,7 @@ body {
     height: 100%;
     object-fit: cover;
     z-index: 1;
+    filter: grayscale(1);
     transition: transform 10s ease-out;
 }
 
@@ -320,13 +321,13 @@ body {
     transition: var(--transition-normal);
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 12px rgba(63, 63, 70, 0.3);
 }
 
 .submit-btn:hover {
     background: var(--primary-hover);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 6px 16px rgba(63, 63, 70, 0.4);
 }
 
 .submit-btn:active {
