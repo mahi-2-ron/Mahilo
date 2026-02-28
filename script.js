@@ -42,8 +42,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.innerHTML = originalHtml;
                 btn.style.opacity = '1';
                 btn.style.pointerEvents = 'all';
-                alert(`Redirecting to ${provider} authentication...`);
-            }, 1500);
+
+                if (provider === 'Google') {
+                    // Redirect to Google Accounts sign-in
+                    window.location.href = 'https://accounts.google.com/v3/signin/identifier?flowName=GlifWebSignIn&flowEntry=ServiceLogin';
+                } else if (provider === 'GitHub') {
+                    // Redirect to GitHub Login
+                    window.location.href = 'https://github.com/login';
+                }
+            }, 1000);
         });
     });
 
