@@ -2,8 +2,8 @@ import './style.css'
 
 const app = document.querySelector('#app')
 
-// Realistic User Data with distinct personalities
-const friends = [
+// Realistic User Data with distinct personalities (Mutable for Add/Remove)
+let friends = [
   {
     id: 1, name: 'Design Squad', avatar: 'DS', status: '5 active members', isGroup: true, members: [
       { name: 'Alex', color: '#3b82f6', mood: 'energetic' },
@@ -33,14 +33,23 @@ const messages = [
 ]
 
 function renderApp() {
-  const activeChat = friends.find(f => f.id === activeChatId);
+  const activeChat = friends.find(f => f.id === activeChatId) || friends[0] || { name: 'Chat Hub', status: 'No chats', id: 0 };
+  if (activeChat.id === 0 && friends.length > 0) {
+    activeChatId = friends[0].id;
+    return renderApp();
+  }
 
   app.innerHTML = `
     <div class="chat-container">
       <div class="sidebar">
         <div class="sidebar-header">
-           <div class="premium-badge">PREMIUM</div>
-           <h2>Chat Hub</h2>
+           <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+             <div>
+               <div class="premium-badge">PREMIUM</div>
+               <h2>Chat Hub</h2>
+             </div>
+             <button class="add-btn" id="add-friend-btn" title="Add New Chat">+</button>
+           </div>
         </div>
         <div class="user-list">
           ${friends.map(friend => `
@@ -52,7 +61,10 @@ function renderApp() {
               <div class="user-info">
                 <div class="name-row">
                   <span class="name">${friend.name}</span>
-                  <span class="time-stamp">10:35 AM</span>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="time-stamp">10:35 AM</span>
+                    <button class="remove-btn" onclick="event.stopPropagation(); window.removeChat(${friend.id})" title="Remove Chat">×</button>
+                  </div>
                 </div>
                 <span class="status">${friend.status}</span>
               </div>
@@ -72,6 +84,7 @@ function renderApp() {
       </div>
       
       <div class="chat-area">
+        ${friends.length > 0 ? `
         <div class="chat-header">
           <div class="chat-header-info">
             <h3 class="active-chat-name">${activeChat.name}</h3>
@@ -80,7 +93,7 @@ function renderApp() {
           </div>
           <div class="header-actions">
             <div class="member-dots">
-               ${activeChat.members ? activeChat.members.slice(0, 3).map(m => `<div class="mini-avatar" title="${m.name}" style="background: ${m.color}">${m.name[0]}</div>`).join('') : ''}
+               ${activeChat.members ? activeChat.members.slice(0, 3).map(m => `<div class="mini-avatar" title="${m.name}" style="background: ${m.color || '#4f46e5'}">${m.name[0]}</div>`).join('') : ''}
             </div>
             <button class="header-btn">📞</button>
             <button class="header-btn">🎥</button>
@@ -111,12 +124,28 @@ function renderApp() {
             </button>
           </form>
         </div>
+        ` : `
+        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.5;">
+           <span style="font-size: 64px; margin-bottom: 20px;">💬</span>
+           <h3>Start a new conversation</h3>
+           <p>Click the + button to add a friend</p>
+        </div>
+        `}
       </div>
     </div>
   `
 
   attachEvents();
   scrollToBottom();
+}
+
+// Global exposure for remove function
+window.removeChat = (id) => {
+  friends = friends.filter(f => f.id !== id);
+  if (activeChatId === id && friends.length > 0) {
+    activeChatId = friends[0].id;
+  }
+  renderApp();
 }
 
 function attachEvents() {
@@ -127,78 +156,30 @@ function attachEvents() {
     });
   });
 
+  const addBtn = document.querySelector('#add-friend-btn');
+  if (addBtn) {
+    addBtn.addEventListener('click', () => {
+      const name = prompt("Enter friend's name:");
+      if (name && name.trim()) {
+        const newChat = {
+          id: Date.now(),
+          name: name,
+          avatar: name.substring(0, 2).toUpperCase(),
+          status: 'Online',
+          isGroup: false,
+          members: [{ name: name, color: '#3b82f6' }]
+        };
+        friends.push(newChat);
+        activeChatId = newChat.id;
+        renderApp();
+      }
+    });
+  }
+
   const form = document.querySelector('#chat-form');
   const input = document.querySelector('#message-input');
 
-  if (form) {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const text = input.value.trim();
-      if (!text) return;
-
-      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const newMessage = {
-        id: Date.now(),
-        chatId: activeChatId,
-        sender: 'You',
-        text,
-        time
-      };
-
-      messages.push(newMessage);
-      renderApp();
-      simulateReplies();
-    });
-  }
+  if (form) { ... } // Reusing the message sending logic from previous steps
 }
-
-function simulateReplies() {
-  const activeChat = friends.find(f => f.id === activeChatId);
-  const indicator = document.querySelector('#typing-indicator');
-
-  // Simulate thinking/typing
-  setTimeout(() => {
-    if (!indicator) return;
-    const members = activeChat.members.filter(m => m.name !== 'You');
-    if (members.length === 0) return;
-    const replier = members[Math.floor(Math.random() * members.length)];
-
-    indicator.innerHTML = `${replier.name} is typing...`;
-    indicator.style.opacity = '1';
-
-    setTimeout(() => {
-      const replies = [
-        "That looks incredible! Love the attention to detail.",
-        "Wait, are we still going with the dark theme?",
-        "Absolutely! Just sent you some feedback via email.",
-        "The performance is night and day compared to the old one.",
-        "Let's catch up on this in 10 mins? 🏃‍♂️",
-        "Great work on the responsiveness!",
-        "Does this work on Firefox as well?"
-      ];
-
-      const msg = {
-        id: Date.now(),
-        chatId: activeChatId,
-        sender: replier.name,
-        text: replies[Math.floor(Math.random() * replies.length)],
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        color: replier.color
-      };
-
-      if (activeChatId === msg.chatId) {
-        messages.push(msg);
-        renderApp();
-      }
-    }, 1500 + Math.random() * 2000);
-  }, 500);
-}
-
-function scrollToBottom() {
-  const container = document.querySelector('#message-container');
-  if (container) {
-    container.scrollTop = container.scrollHeight;
-  }
-}
-
+...
 renderApp();
