@@ -5,13 +5,14 @@ const app = document.querySelector('#app')
 // Simulation of multiple users (2-5 members)
 const friends = [
   { id: 1, name: 'Design Squad', avatar: 'DS', status: 'Group • 5 members', isGroup: true, members: ['Alex', 'Sarah', 'Jamie', 'Maya', 'You'] },
-  { id: 2, name: 'Alex Rivera', avatar: 'AR', status: 'Online', isGroup: false },
-  { id: 3, name: 'Sarah Chen', avatar: 'SC', status: 'Typing...', isGroup: false },
+  { id: 2, name: 'Alex Rivera', avatar: 'AR', status: 'Online', isGroup: false, members: ['Alex', 'You'] },
+  { id: 3, name: 'Sarah Chen', avatar: 'SC', status: 'Typing...', isGroup: false, members: ['Sarah', 'You'] },
   { id: 4, name: 'Project Alpha', avatar: 'PA', status: 'Group • 3 members', isGroup: true, members: ['Alex', 'Jamie', 'You'] },
 ]
 
 let activeChatId = 1;
 
+// Initial messages
 const messages = [
   { id: 1, chatId: 1, sender: 'Alex', text: 'Hey team! How is the project going?', time: '10:30 AM', color: '#3b82f6' },
   { id: 2, chatId: 1, sender: 'Sarah', text: 'Just finished the UI architecture. It looks sleek!', time: '10:32 AM', color: '#10b981' },
@@ -30,7 +31,7 @@ function renderApp() {
         </div>
         <div class="user-list">
           ${friends.map(friend => `
-            <div class="user-item ${friend.id === activeChatId ? 'active' : ''}" onclick="window.switchChat(${friend.id})">
+            <div class="user-item ${friend.id === activeChatId ? 'active' : ''}" data-id="${friend.id}">
               <div class="avatar" style="background: ${friend.isGroup ? 'linear-gradient(135deg, #6366f1, #a855f7)' : ''}">${friend.avatar}</div>
               <div class="user-info">
                 <span class="name">${friend.name}</span>
@@ -82,77 +83,87 @@ function renderApp() {
     </div>
   `
 
-  setupEventListeners();
+  attachEvents();
+  scrollToBottom();
 }
 
-window.switchChat = (id) => {
-  activeChatId = id;
-  renderApp();
-  const container = document.querySelector('#message-container');
-  container.scrollTop = container.scrollHeight;
-}
+function attachEvents() {
+  // Sidebar clicks
+  document.querySelectorAll('.user-item').forEach(item => {
+    item.addEventListener('click', () => {
+      activeChatId = parseInt(item.dataset.id);
+      renderApp();
+    });
+  });
 
-function setupEventListeners() {
-  const form = document.querySelector('#chat-form')
-  const input = document.querySelector('#message-input')
-  const container = document.querySelector('#message-container')
+  // Form submission
+  const form = document.querySelector('#chat-form');
+  const input = document.querySelector('#message-input');
 
   if (form) {
     form.addEventListener('submit', (e) => {
-      e.preventDefault()
-      const text = input.value.trim()
-      if (!text) return
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
 
-      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const newMessage = {
         id: Date.now(),
         chatId: activeChatId,
         sender: 'You',
         text,
-        time,
-        color: '#8b5cf6'
-      }
+        time
+      };
 
-      messages.push(newMessage)
-      appendMessage(newMessage)
-      input.value = ''
-      container.scrollTop = container.scrollHeight
+      messages.push(newMessage);
+      renderApp(); // Rerender to show new message
 
-      // Simulate Group Reply
-      const activeChat = friends.find(f => f.id === activeChatId);
-      if (activeChat.isGroup) {
-        setTimeout(() => {
-          const members = activeChat.members.filter(m => m !== 'You');
-          const randomMember = members[Math.floor(Math.random() * members.length)];
-          const reply = {
-            id: Date.now() + 1,
-            chatId: activeChatId,
-            sender: randomMember,
-            text: 'Totally agree! ' + (randomMember === 'Alex' ? '🚀' : '✨'),
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            color: randomMember === 'Alex' ? '#3b82f6' : '#10b981'
-          }
-          messages.push(reply)
-          appendMessage(reply)
-          container.scrollTop = container.scrollHeight
-        }, 1500)
-      }
-    })
+      // Fake Reply Logic
+      handleReply();
+    });
   }
 }
 
-function appendMessage(msg) {
-  const container = document.querySelector('#message-container')
-  const div = document.createElement('div')
-  div.className = `message-wrapper ${msg.sender === 'You' ? 'sent' : 'received'}`
-  div.innerHTML = `
-    ${msg.sender !== 'You' ? `<span class="sender-name" style="color: ${msg.color || '#94a3b8'}">${msg.sender}</span>` : ''}
-    <div class="message">
-      <div class="text">${msg.text}</div>
-      <div class="message-info">${msg.time} ${msg.sender === 'You' ? '✓✓' : ''}</div>
-    </div>
-  `
-  container.appendChild(div)
+function handleReply() {
+  const activeChat = friends.find(f => f.id === activeChatId);
+  setTimeout(() => {
+    const members = activeChat.members.filter(m => m !== 'You');
+    if (members.length === 0) return;
+
+    const randomMember = members[Math.floor(Math.random() * members.length)];
+    const replies = [
+      "That sounds like a great plan! 🚀",
+      "I'm on it. Will update you soon. ✨",
+      "Love the glassmorphism idea! 😍",
+      "Can we review this tomorrow? 📅",
+      "Perfect! Let's go with that. ✅"
+    ];
+
+    const replyMessage = {
+      id: Date.now() + 1,
+      chatId: activeChatId,
+      sender: randomMember,
+      text: replies[Math.floor(Math.random() * replies.length)],
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      color: randomMember === 'Alex' ? '#3b82f6' :
+        randomMember === 'Sarah' ? '#10b981' :
+          randomMember === 'Jamie' ? '#f59e0b' : '#ec4899'
+    };
+
+    // Only push if the user is still in the same chat
+    if (activeChatId === replyMessage.chatId) {
+      messages.push(replyMessage);
+      renderApp();
+    }
+  }, 2000);
 }
 
-renderApp()
+function scrollToBottom() {
+  const container = document.querySelector('#message-container');
+  if (container) {
+    container.scrollTop = container.scrollHeight;
+  }
+}
+
+// Initial render
+renderApp();
