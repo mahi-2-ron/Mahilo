@@ -400,3 +400,41 @@ body {
   background: #4f46e5;
   color: #fff;
 }
+.add-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+}
+
+.add-btn:hover {
+    background: #4f46e5;
+    transform: scale(1.1);
+}
+
+.remove-btn {
+    background: transparent;
+    border: none;
+    color: #475569;
+    cursor: pointer;
+    font-size: 18px;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.user-item:hover .remove-btn {
+    opacity: 1;
+}
+
+.remove-btn:hover {
+    color: #ef4444;
+    transform: scale(1.2);
+}
