@@ -468,6 +468,7 @@ body {
         padding: 40px;
     }
 }
+
 .created-by {
     position: fixed;
     bottom: 20px;
@@ -491,6 +492,7 @@ body {
     font-weight: 700;
     position: relative;
     cursor: pointer;
+    text-decoration: none;
 }
 
 .creator-name:after {
