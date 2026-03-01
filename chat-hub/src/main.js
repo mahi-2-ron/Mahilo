@@ -4,19 +4,17 @@ const app = document.querySelector('#app')
 
 const friends = [
   { id: 1, name: 'Alex Rivera', avatar: 'AR', status: 'Online', lastMessage: 'Hey, did you see the new update?' },
-  {
-    id: 2, name: 'Sarah Chen', avatar: 'SC', status: 'Typing...', lastMessage: 'I'll be there in 5 mins!' },
+  { id: 2, name: 'Sarah Chen', avatar: 'SC', status: 'Typing...', lastMessage: "I'll be there in 5 mins!" },
   { id: 3, name: 'Jamie Smith', avatar: 'JS', status: 'Offline', lastMessage: 'That looks amazing, great job!' },
-  { id: 4, name: 'Maya Patel', avatar: 'MP', status: 'Online', lastMessage: 'Let's chat later tonight.' },
+  { id: 4, name: 'Maya Patel', avatar: 'MP', status: 'Online', lastMessage: "Let's chat later tonight." },
 ]
 
 const messages = [
   { id: 1, sender: 'Alex', text: 'Hey there! How is the project going?', time: '10:30 AM', type: 'received' },
-  {
-    id: 2, sender: 'You', text: 'It's going great! Just finished the UI architecture.', time: '10: 32 AM', type: 'sent' },
-  { id: 3, sender: 'Alex', text: 'That's awesome! Can't wait to see it.', time: '10:33 AM', type: 'received' },
+  { id: 2, sender: 'You', text: "It's going great! Just finished the UI architecture.", time: '10:32 AM', type: 'sent' },
+  { id: 3, sender: 'Alex', text: "That's awesome! Can't wait to see it.", time: '10:33 AM', type: 'received' },
   { id: 4, sender: 'Alex', text: 'Are you using Vite?', time: '10:33 AM', type: 'received' },
-  { id: 5, sender: 'You', text: 'Yes! It's super fast.I even added glassmorphism.', time: '10: 35 AM', type: 'sent' },
+  { id: 5, sender: 'You', text: "Yes! It's super fast. I even added glassmorphism.", time: '10:35 AM', type: 'sent' },
 ]
 
 function renderApp() {
