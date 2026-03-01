@@ -33,11 +33,7 @@ const messages = [
 ]
 
 function renderApp() {
-  const activeChat = friends.find(f => f.id === activeChatId) || friends[0] || { name: 'Chat Hub', status: 'No chats', id: 0 };
-  if (activeChat.id === 0 && friends.length > 0) {
-    activeChatId = friends[0].id;
-    return renderApp();
-  }
+  const activeChat = friends.find(f => f.id === activeChatId) || friends[0] || { name: 'Chat Hub', status: 'No chats', id: 0, members: [] };
 
   app.innerHTML = `
     <div class="chat-container">
@@ -63,7 +59,7 @@ function renderApp() {
                   <span class="name">${friend.name}</span>
                   <div style="display: flex; align-items: center; gap: 8px;">
                     <span class="time-stamp">10:35 AM</span>
-                    <button class="remove-btn" onclick="event.stopPropagation(); window.removeChat(${friend.id})" title="Remove Chat">×</button>
+                    <button class="remove-btn" onclick="window.removeChat(event, ${friend.id})" title="Remove Chat">×</button>
                   </div>
                 </div>
                 <span class="status">${friend.status}</span>
@@ -128,7 +124,7 @@ function renderApp() {
         <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.5;">
            <span style="font-size: 64px; margin-bottom: 20px;">💬</span>
            <h3>Start a new conversation</h3>
-           <p>Click the + button to add a friend</p>
+           <p>Click the + button in the sidebar to add a chat</p>
         </div>
         `}
       </div>
@@ -139,8 +135,8 @@ function renderApp() {
   scrollToBottom();
 }
 
-// Global exposure for remove function
-window.removeChat = (id) => {
+window.removeChat = (e, id) => {
+  e.stopPropagation();
   friends = friends.filter(f => f.id !== id);
   if (activeChatId === id && friends.length > 0) {
     activeChatId = friends[0].id;
@@ -179,7 +175,76 @@ function attachEvents() {
   const form = document.querySelector('#chat-form');
   const input = document.querySelector('#message-input');
 
-  if (form) { ... } // Reusing the message sending logic from previous steps
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const newMessage = {
+        id: Date.now(),
+        chatId: activeChatId,
+        sender: 'You',
+        text,
+        time
+      };
+
+      messages.push(newMessage);
+      renderApp();
+      simulateReplies();
+    });
+  }
 }
-...
+
+function simulateReplies() {
+  const activeChat = friends.find(f => f.id === activeChatId);
+  if (!activeChat || !activeChat.members) return;
+
+  const indicator = document.querySelector('#typing-indicator');
+
+  setTimeout(() => {
+    if (!indicator) return;
+    const members = activeChat.members.filter(m => m.name !== 'You');
+    if (members.length === 0) return;
+    const replier = members[Math.floor(Math.random() * members.length)];
+
+    indicator.innerHTML = `${replier.name} is typing...`;
+    indicator.style.opacity = '1';
+
+    setTimeout(() => {
+      const replies = [
+        "That looks incredible! Love the attention to detail.",
+        "Wait, are we still going with the dark theme?",
+        "Absolutely! Just sent you some feedback via email.",
+        "The performance is night and day compared to the old one.",
+        "Let's catch up on this in 10 mins? 🏃‍♂️",
+        "Great work on the responsiveness!",
+        "Does this work on Firefox as well?"
+      ];
+
+      const msg = {
+        id: Date.now(),
+        chatId: activeChatId,
+        sender: replier.name,
+        text: replies[Math.floor(Math.random() * replies.length)],
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        color: replier.color
+      };
+
+      if (activeChatId === msg.chatId) {
+        messages.push(msg);
+        renderApp();
+      }
+    }, 2000);
+  }, 500);
+}
+
+function scrollToBottom() {
+  const container = document.querySelector('#message-container');
+  if (container) {
+    container.scrollTop = container.scrollHeight;
+  }
+}
+
 renderApp();
