@@ -468,3 +468,42 @@ body {
         padding: 40px;
     }
 }
+.created-by {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 500;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.created-by:hover {
+    opacity: 1;
+    letter-spacing: 0.5px;
+}
+
+.creator-name {
+    color: var(--text-main);
+    font-weight: 700;
+    position: relative;
+    cursor: pointer;
+}
+
+.creator-name:after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0%;
+    height: 1px;
+    background: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+.created-by:hover .creator-name:after {
+    width: 100%;
+}
