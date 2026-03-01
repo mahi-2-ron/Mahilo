@@ -2,22 +2,34 @@ import './style.css'
 
 const app = document.querySelector('#app')
 
-// Simulation of multiple users (2-5 members)
+// Realistic User Data with distinct personalities
 const friends = [
-  { id: 1, name: 'Design Squad', avatar: 'DS', status: 'Group • 5 members', isGroup: true, members: ['Alex', 'Sarah', 'Jamie', 'Maya', 'You'] },
-  { id: 2, name: 'Alex Rivera', avatar: 'AR', status: 'Online', isGroup: false, members: ['Alex', 'You'] },
-  { id: 3, name: 'Sarah Chen', avatar: 'SC', status: 'Typing...', isGroup: false, members: ['Sarah', 'You'] },
-  { id: 4, name: 'Project Alpha', avatar: 'PA', status: 'Group • 3 members', isGroup: true, members: ['Alex', 'Jamie', 'You'] },
+  {
+    id: 1, name: 'Design Squad', avatar: 'DS', status: '5 active members', isGroup: true, members: [
+      { name: 'Alex', color: '#3b82f6', mood: 'energetic' },
+      { name: 'Sarah', color: '#10b981', mood: 'professional' },
+      { name: 'Jamie', color: '#f59e0b', mood: 'chill' },
+      { name: 'Maya', color: '#ec4899', mood: 'creative' }
+    ]
+  },
+  { id: 2, name: 'Alex Rivera', avatar: 'AR', status: 'Online', isGroup: false, members: [{ name: 'Alex', color: '#3b82f6' }] },
+  { id: 3, name: 'Sarah Chen', avatar: 'SC', status: 'Last seen 5m ago', isGroup: false, members: [{ name: 'Sarah', color: '#10b981' }] },
+  {
+    id: 4, name: 'Project Alpha', avatar: 'PA', status: '3 members', isGroup: true, members: [
+      { name: 'Alex', color: '#3b82f6' },
+      { name: 'Jamie', color: '#f59e0b' }
+    ]
+  },
 ]
 
 let activeChatId = 1;
 
-// Initial messages
+// Initial realistic message history
 const messages = [
-  { id: 1, chatId: 1, sender: 'Alex', text: 'Hey team! How is the project going?', time: '10:30 AM', color: '#3b82f6' },
-  { id: 2, chatId: 1, sender: 'Sarah', text: 'Just finished the UI architecture. It looks sleek!', time: '10:32 AM', color: '#10b981' },
-  { id: 3, chatId: 1, sender: 'Maya', text: 'Can we add glassmorphism to the sidebar?', time: '10:33 AM', color: '#f59e0b' },
-  { id: 4, chatId: 1, sender: 'You', text: "Already on it! I'm using Vite for speed.", time: '10:35 AM', color: '#8b5cf6' },
+  { id: 1, chatId: 1, sender: 'Alex', text: 'Hey team! Anyone had a chance to look at the new mockups?', time: '10:30 AM', color: '#3b82f6' },
+  { id: 2, chatId: 1, sender: 'Sarah', text: 'Checking them now. The typography feels much better.', time: '10:32 AM', color: '#10b981' },
+  { id: 3, chatId: 1, sender: 'Maya', text: 'I love the glassmorphism on the sidebar. Very Apple-esque!', time: '10:33 AM', color: '#ec4899' },
+  { id: 4, chatId: 1, sender: 'You', text: "Glad you like it! I'm optimizing the load times as we speak.", time: '10:35 AM', color: '#8b5cf6' },
 ]
 
 function renderApp() {
@@ -27,28 +39,49 @@ function renderApp() {
     <div class="chat-container">
       <div class="sidebar">
         <div class="sidebar-header">
-          <h2>Messages</h2>
+           <div class="premium-badge">PREMIUM</div>
+           <h2>Chat Hub</h2>
         </div>
         <div class="user-list">
           ${friends.map(friend => `
             <div class="user-item ${friend.id === activeChatId ? 'active' : ''}" data-id="${friend.id}">
-              <div class="avatar" style="background: ${friend.isGroup ? 'linear-gradient(135deg, #6366f1, #a855f7)' : ''}">${friend.avatar}</div>
+              <div class="avatar-stack">
+                <div class="avatar" style="background: ${friend.isGroup ? 'linear-gradient(135deg, #4f46e5, #9333ea)' : ''}">${friend.avatar}</div>
+                ${friend.status.includes('Online') ? '<div class="online-indicator"></div>' : ''}
+              </div>
               <div class="user-info">
-                <span class="name">${friend.name}</span>
+                <div class="name-row">
+                  <span class="name">${friend.name}</span>
+                  <span class="time-stamp">10:35 AM</span>
+                </div>
                 <span class="status">${friend.status}</span>
               </div>
             </div>
           `).join('')}
+        </div>
+        <div class="sidebar-footer">
+          <div class="current-user">
+            <div class="avatar" style="width: 32px; height: 32px; font-size: 12px;">ME</div>
+            <div class="user-info">
+              <span class="name">Mahesh M.</span>
+              <span class="status">Available</span>
+            </div>
+          </div>
+          <button class="settings-btn">⚙️</button>
         </div>
       </div>
       
       <div class="chat-area">
         <div class="chat-header">
           <div class="chat-header-info">
-            <h3 style="font-size: 18px; color: #f8fafc;">${activeChat.name}</h3>
-            <span style="font-size: 12px; color: #94a3b8;">${activeChat.status}</span>
+            <h3 class="active-chat-name">${activeChat.name}</h3>
+            <div id="typing-indicator" class="typing-indicator"></div>
+            <span class="chat-status">${activeChat.status}</span>
           </div>
           <div class="header-actions">
+            <div class="member-dots">
+               ${activeChat.members ? activeChat.members.slice(0, 3).map(m => `<div class="mini-avatar" title="${m.name}" style="background: ${m.color}">${m.name[0]}</div>`).join('') : ''}
+            </div>
             <button class="header-btn">📞</button>
             <button class="header-btn">🎥</button>
             <button class="header-btn">⋮</button>
@@ -56,12 +89,13 @@ function renderApp() {
         </div>
         
         <div class="chat-messages" id="message-container">
+           <div class="date-divider"><span>Today</span></div>
           ${messages.filter(m => m.chatId === activeChatId).map(msg => `
-            <div class="message-wrapper ${msg.sender === 'You' ? 'sent' : 'received'}">
+            <div class="message-wrapper ${msg.sender === 'You' ? 'sent' : 'received'}" style="animation: fadeInUp 0.3s ease-out">
               ${msg.sender !== 'You' ? `<span class="sender-name" style="color: ${msg.color || '#94a3b8'}">${msg.sender}</span>` : ''}
               <div class="message">
                 <div class="text">${msg.text}</div>
-                <div class="message-info">${msg.time} ${msg.sender === 'You' ? '✓✓' : ''}</div>
+                <div class="message-info">${msg.time} ${msg.sender === 'You' ? '<span class="read-receipt">✓✓</span>' : ''}</div>
               </div>
             </div>
           `).join('')}
@@ -69,13 +103,11 @@ function renderApp() {
         
         <div class="input-area">
           <form class="input-wrapper" id="chat-form">
-            <button type="button" class="action-btn">+</button>
-            <input type="text" placeholder="Message ${activeChat.name}..." id="message-input" autocomplete="off">
+            <button type="button" class="action-btn">📎</button>
+            <input type="text" placeholder="Type something to ${activeChat.name}..." id="message-input" autocomplete="off">
+            <button type="button" class="action-btn">😊</button>
             <button type="submit" class="send-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-              </svg>
+               <span class="send-icon">↗</span>
             </button>
           </form>
         </div>
@@ -88,7 +120,6 @@ function renderApp() {
 }
 
 function attachEvents() {
-  // Sidebar clicks
   document.querySelectorAll('.user-item').forEach(item => {
     item.addEventListener('click', () => {
       activeChatId = parseInt(item.dataset.id);
@@ -96,7 +127,6 @@ function attachEvents() {
     });
   });
 
-  // Form submission
   const form = document.querySelector('#chat-form');
   const input = document.querySelector('#message-input');
 
@@ -116,46 +146,52 @@ function attachEvents() {
       };
 
       messages.push(newMessage);
-      renderApp(); // Rerender to show new message
-
-      // Fake Reply Logic
-      handleReply();
+      renderApp();
+      simulateReplies();
     });
   }
 }
 
-function handleReply() {
+function simulateReplies() {
   const activeChat = friends.find(f => f.id === activeChatId);
+  const indicator = document.querySelector('#typing-indicator');
+
+  // Simulate thinking/typing
   setTimeout(() => {
-    const members = activeChat.members.filter(m => m !== 'You');
+    if (!indicator) return;
+    const members = activeChat.members.filter(m => m.name !== 'You');
     if (members.length === 0) return;
+    const replier = members[Math.floor(Math.random() * members.length)];
 
-    const randomMember = members[Math.floor(Math.random() * members.length)];
-    const replies = [
-      "That sounds like a great plan! 🚀",
-      "I'm on it. Will update you soon. ✨",
-      "Love the glassmorphism idea! 😍",
-      "Can we review this tomorrow? 📅",
-      "Perfect! Let's go with that. ✅"
-    ];
+    indicator.innerHTML = `${replier.name} is typing...`;
+    indicator.style.opacity = '1';
 
-    const replyMessage = {
-      id: Date.now() + 1,
-      chatId: activeChatId,
-      sender: randomMember,
-      text: replies[Math.floor(Math.random() * replies.length)],
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      color: randomMember === 'Alex' ? '#3b82f6' :
-        randomMember === 'Sarah' ? '#10b981' :
-          randomMember === 'Jamie' ? '#f59e0b' : '#ec4899'
-    };
+    setTimeout(() => {
+      const replies = [
+        "That looks incredible! Love the attention to detail.",
+        "Wait, are we still going with the dark theme?",
+        "Absolutely! Just sent you some feedback via email.",
+        "The performance is night and day compared to the old one.",
+        "Let's catch up on this in 10 mins? 🏃‍♂️",
+        "Great work on the responsiveness!",
+        "Does this work on Firefox as well?"
+      ];
 
-    // Only push if the user is still in the same chat
-    if (activeChatId === replyMessage.chatId) {
-      messages.push(replyMessage);
-      renderApp();
-    }
-  }, 2000);
+      const msg = {
+        id: Date.now(),
+        chatId: activeChatId,
+        sender: replier.name,
+        text: replies[Math.floor(Math.random() * replies.length)],
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        color: replier.color
+      };
+
+      if (activeChatId === msg.chatId) {
+        messages.push(msg);
+        renderApp();
+      }
+    }, 1500 + Math.random() * 2000);
+  }, 500);
 }
 
 function scrollToBottom() {
@@ -165,5 +201,4 @@ function scrollToBottom() {
   }
 }
 
-// Initial render
 renderApp();
