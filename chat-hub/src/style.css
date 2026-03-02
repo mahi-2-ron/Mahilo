@@ -120,13 +120,15 @@ body {
   width: 52px;
   height: 52px;
   border-radius: 18px;
-  background: linear-gradient(135deg, #1e293b, #334155);
+  background: linear-gradient(135deg, #6366f1, #a855f7);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .online-indicator {
@@ -517,4 +519,60 @@ body {
 .remove-btn:hover {
   color: #ef4444;
   transform: scale(1.2);
+}
+
+/* Smart Replies */
+.smart-replies-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  padding: 0 10px;
+  overflow-x: auto;
+}
+
+.smart-reply {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  padding: 8px 16px;
+  border-radius: 15px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.smart-reply:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: #6366f1;
+  transform: translateY(-2px);
+}
+
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple:after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(10, 10);
+  opacity: 0;
+  transition: transform .5s, opacity 1s;
+}
+
+.ripple:active:after {
+  transform: scale(0, 0);
+  opacity: .3;
+  transition: 0s;
 }
