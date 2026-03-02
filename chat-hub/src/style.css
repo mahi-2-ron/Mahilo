@@ -119,7 +119,7 @@ body {
 .avatar {
   width: 52px;
   height: 52px;
-  border-radius: 18px;
+  border-radius: 20px;
   background: linear-gradient(135deg, #6366f1, #a855f7);
   display: flex;
   align-items: center;
@@ -128,7 +128,37 @@ body {
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  position: relative;
+}
+
+.avatar img {
+  width: 200%;
+  /* Because it's a 2x2 grid */
+  height: 200%;
+  object-fit: cover;
+  position: absolute;
+}
+
+/* Slicing the mosaic (2x2) */
+.avatar.alex img {
+  top: 0;
+  left: 0;
+}
+
+.avatar.sarah img {
+  top: 0;
+  left: -100%;
+}
+
+.avatar.jamie img {
+  top: -100%;
+  left: 0;
+}
+
+.avatar.maya img {
+  top: -100%;
+  left: -100%;
 }
 
 .online-indicator {
@@ -214,13 +244,16 @@ body {
 }
 
 .active-chat-name {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
 .chat-status {
-  font-size: 12px;
-  color: #64748b;
+  font-size: 13px;
+  color: #94a3b8;
+  display: block;
+  margin-top: 2px;
 }
 
 .typing-indicator {
