@@ -278,47 +278,68 @@ function simulateReplies() {
   if (members.length === 0) return;
   const replier = members[Math.floor(Math.random() * members.length)];
 
-  // Set Typing State
+  const replies = [
+    { typo: "That looks incrdible!", fix: "incredible!" },
+    { typo: "Wait, did we chnage the theme?", fix: "change*" },
+    { text: "Just sent you the feedback. Check your inbox! 📧" },
+    { text: "Great work everyone! 🚀" },
+    { typo: "I'm workin on the assets", fix: "working*" },
+    { text: "Looks good to me! 👍" },
+    { typo: "Hvae you tested mobile?", fix: "Have*" },
+    { text: "Perfect. I'll update the board. 📋" }
+  ];
+
+  const selected = replies[Math.floor(Math.random() * replies.length)];
+
+  // Human Delay: Thinking time
   setTimeout(() => {
     state.isTyping = true;
     state.typingName = replier.name;
     renderApp();
 
-    const replies = [
-      "That looks incredible!",
-      "I agree with Sarah on this.",
-      "Just sent you some feedback via email.",
-      "Great work! 🚀",
-      "I'm working on the assets now.",
-      "Can we hop on a quick call?",
-      "Looks good to me!",
-      "Have you tested it on mobile?",
-      "Perfect. I'll update the Trello board.",
-      "Wait, Sarah, did you see my last comment?"
-    ];
-
-    const replyText = replies[Math.floor(Math.random() * replies.length)];
-    const typingDuration = Math.min(Math.max(replyText.length * 40, 1500), 4000);
-
-    setTimeout(() => {
+    const sendFinalMessage = (txt, isCorrection = false) => {
       const msg = {
         id: Date.now(),
         chatId: state.activeChatId,
         sender: replier.name,
-        text: replyText,
+        text: txt,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         color: replier.color,
         senderClass: replier.class,
         reactions: {}
       };
-
       if (state.activeChatId === msg.chatId) {
         state.messages.push(msg);
         state.isTyping = false;
         renderApp();
       }
-    }, typingDuration);
-  }, 1000);
+    };
+
+    if (selected.typo) {
+      // Simulate Typo -> Wait -> Fix
+      const typingDuration = selected.typo.length * 50;
+      setTimeout(() => {
+        sendFinalMessage(selected.typo);
+
+        // Second delay to "notice" the typo and send a correction
+        setTimeout(() => {
+          state.isTyping = true;
+          state.typingName = replier.name;
+          renderApp();
+
+          setTimeout(() => {
+            sendFinalMessage(selected.fix, true);
+          }, 1500);
+        }, 1000);
+      }, typingDuration);
+    } else {
+      // Normal message
+      const typingDuration = Math.min(Math.max(selected.text.length * 60, 1500), 5000);
+      setTimeout(() => {
+        sendFinalMessage(selected.text);
+      }, typingDuration);
+    }
+  }, 1200);
 }
 
 function scrollToBottom() {
