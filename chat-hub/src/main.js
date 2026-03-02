@@ -13,7 +13,7 @@ let friends = [
     ]
   },
   { id: 2, name: 'Alex Rivera', avatar: 'AR', status: 'Online', isGroup: false, members: [{ name: 'Alex', color: '#3b82f6', delay: 2000 }] },
-  { id: 3, name: 'Sarah Chen', avatar: 'SC', status: 'Last seen 5m ago', isGroup: false, members: [{ name: 'Sarah', color: '#10b981', delay: 4500 }] },
+  { id: 3, name: 'Sarah Chen', avatar: 'SC', status: 'Away', isGroup: false, members: [{ name: 'Sarah', color: '#10b981', delay: 4500 }] },
   {
     id: 4, name: 'Project Alpha', avatar: 'PA', status: '3 members', isGroup: true, members: [
       { name: 'Alex', color: '#3b82f6', delay: 2000 },
@@ -23,6 +23,14 @@ let friends = [
 ]
 
 let activeChatId = 1;
+let smartReplies = ["Sounds good!", "I'll check it out.", "Perfect!", "Can't wait!", "Tell me more."];
+
+// Utility for consistent colors
+const getAvatarColor = (name) => {
+  const hash = name.split('').reduce((acc, char) => char.charCodeAt(0) + ((acc << 5) - acc), 0);
+  const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#ef4444', '#06b6d4'];
+  return colors[Math.abs(hash) % colors.length];
+};
 
 // Messages store status and reactions
 let messages = [
@@ -44,22 +52,22 @@ function renderApp() {
                <div class="premium-badge">PREMIUM Hub</div>
                <h2>Chat Hub</h2>
              </div>
-             <button class="add-btn" id="add-friend-btn" title="Add New Chat">+</button>
+             <button class="add-btn ripple" id="add-friend-btn" title="Add New Chat">+</button>
            </div>
         </div>
         <div class="user-list">
           ${friends.map(friend => `
             <div class="user-item ${friend.id === activeChatId ? 'active' : ''}" data-id="${friend.id}">
               <div class="avatar-stack">
-                <div class="avatar" style="background: ${friend.isGroup ? 'linear-gradient(135deg, #4f46e5, #9333ea)' : ''}">${friend.avatar}</div>
-                ${friend.status.includes('Online') ? '<div class="online-indicator"></div>' : ''}
+                <div class="avatar" style="background: ${friend.isGroup ? 'linear-gradient(135deg, #6366f1, #a855f7)' : getAvatarColor(friend.name)}">${friend.avatar}</div>
+                ${friend.status === 'Online' ? '<div class="online-indicator"></div>' : ''}
               </div>
               <div class="user-info">
                 <div class="name-row">
                   <span class="name">${friend.name}</span>
                   <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="time-stamp">Just now</span>
-                    <button class="remove-btn" data-id="${friend.id}" title="Remove Chat">×</button>
+                    <span class="time-stamp">Recently</span>
+                    <button class="remove-btn ripple" data-id="${friend.id}" title="Remove Chat">×</button>
                   </div>
                 </div>
                 <span class="status">${friend.status}</span>
@@ -69,13 +77,13 @@ function renderApp() {
         </div>
         <div class="sidebar-footer">
           <div class="current-user">
-            <div class="avatar" style="width: 32px; height: 32px; font-size: 12px;">ME</div>
+            <div class="avatar" style="width: 38px; height: 38px; font-size: 14px; background: #8b5cf6">ME</div>
             <div class="user-info">
               <span class="name">Mahesh M.</span>
               <span class="status">Available</span>
             </div>
           </div>
-          <button class="settings-btn">⚙️</button>
+          <button class="settings-btn ripple">⚙️</button>
         </div>
       </div>
       
@@ -118,7 +126,7 @@ function renderApp() {
               </div>
               <div class="reactions-container">
                 ${Object.entries(msg.reactions || {}).map(([emoji, count]) => `
-                  <div class="reaction" data-emoji="${emoji}" data-msg-id="${msg.id}">
+                  <div class="reaction ripple" data-emoji="${emoji}" data-msg-id="${msg.id}">
                     <span>${emoji}</span>
                     <span class="reaction-count">${count}</span>
                   </div>
@@ -129,11 +137,14 @@ function renderApp() {
         </div>
         
         <div class="input-area">
+          <div class="smart-replies-container" id="smart-replies">
+            ${smartReplies.map(reply => `<button class="smart-reply ripple">${reply}</button>`).join('')}
+          </div>
           <form class="input-wrapper" id="chat-form">
             <button type="button" class="action-btn">📎</button>
             <input type="text" placeholder="Message ${activeChat.name}..." id="message-input" autocomplete="off">
             <button type="button" class="action-btn">😊</button>
-            <button type="submit" class="send-btn">
+            <button type="submit" class="send-btn ripple">
                <span class="send-icon">↗</span>
             </button>
           </form>
@@ -182,7 +193,7 @@ function attachEvents() {
           avatar: name.substring(0, 2).toUpperCase(),
           status: 'Online',
           isGroup: false,
-          members: [{ name: name, color: '#3b82f6', delay: 2500 }]
+          members: [{ name: name, color: getAvatarColor(name), delay: 2500 }]
         };
         friends.push(newChat);
         activeChatId = newChat.id;
@@ -194,39 +205,53 @@ function attachEvents() {
   const form = document.querySelector('#chat-form');
   const input = document.querySelector('#message-input');
 
+  const sendMessage = (text) => {
+    if (!text) return;
+
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const newMessage = {
+      id: Date.now(),
+      chatId: activeChatId,
+      sender: 'You',
+      text,
+      time,
+      status: 'sent',
+      reactions: {}
+    };
+
+    messages.push(newMessage);
+    if (input) input.value = '';
+    renderApp();
+
+    // Hide smart replies after sending
+    const smartRepliesEl = document.querySelector('#smart-replies');
+    if (smartRepliesEl) smartRepliesEl.style.display = 'none';
+
+    // Simulate delievery and seen
+    setTimeout(() => {
+      newMessage.status = 'delivered';
+      renderApp();
+      setTimeout(() => {
+        newMessage.status = 'seen';
+        renderApp();
+        simulateReplies();
+      }, 1000);
+    }, 800);
+  };
+
   if (form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const text = input.value.trim();
-      if (!text) return;
-
-      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const newMessage = {
-        id: Date.now(),
-        chatId: activeChatId,
-        sender: 'You',
-        text,
-        time,
-        status: 'sent',
-        reactions: {}
-      };
-
-      messages.push(newMessage);
-      input.value = '';
-      renderApp();
-
-      // Simulate delievery and seen
-      setTimeout(() => {
-        newMessage.status = 'delivered';
-        renderApp();
-        setTimeout(() => {
-          newMessage.status = 'seen';
-          renderApp();
-          simulateReplies();
-        }, 1000);
-      }, 800);
+      sendMessage(input.value.trim());
     });
   }
+
+  // Smart reply events
+  document.querySelectorAll('.smart-reply').forEach(btn => {
+    btn.addEventListener('click', () => {
+      sendMessage(btn.innerText);
+    });
+  });
 
   // Double click to react
   document.querySelectorAll('.message').forEach(msgEl => {
@@ -270,7 +295,9 @@ function simulateReplies() {
       "Great work! 🚀",
       "I'm working on the assets now.",
       "Can we hop on a quick call?",
-      "Looks good to me!"
+      "Looks good to me!",
+      "I agree with Sarah on this.",
+      "Have you tested it on mobile?"
     ];
 
     const replyText = replies[Math.floor(Math.random() * replies.length)];
