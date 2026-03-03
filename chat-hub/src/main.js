@@ -400,6 +400,12 @@ function attachEvents() {
     }, 2000);
   });
 
+  document.querySelectorAll('.smart-reply').forEach(btn => {
+    btn.addEventListener('click', () => {
+      sendMessage(btn.innerText);
+    });
+  });
+
   // Reaction Picker Logic
   document.querySelectorAll('.picker-emoji').forEach(emojiEl => {
     emojiEl.addEventListener('click', (e) => {
