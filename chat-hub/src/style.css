@@ -105,6 +105,40 @@ body {
   color: #fff;
 }
 
+.search-container {
+  padding: 0 20px 10px;
+}
+
+.search-wrapper {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 8px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  transition: 0.3s;
+}
+
+.search-wrapper:focus-within {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(99, 102, 241, 0.5);
+}
+
+.search-wrapper input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 14px;
+  flex: 1;
+}
+
+.search-icon {
+  opacity: 0.4;
+  font-size: 14px;
+}
+
 .user-list {
   flex: 1;
   overflow-y: auto;
@@ -441,6 +475,145 @@ body {
 
 .read-receipt.seen {
   color: #3b82f6;
+}
+
+/* Reaction Picker */
+.reaction-picker {
+  position: absolute;
+  top: -45px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  padding: 5px 10px;
+  display: flex;
+  gap: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px) scale(0.9);
+  transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.reaction-picker.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0) scale(1.1);
+}
+
+.sent .reaction-picker {
+  right: 0;
+}
+
+.received .reaction-picker {
+  left: 0;
+}
+
+.picker-emoji {
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.2s;
+  padding: 5px;
+  border-radius: 50%;
+}
+
+.picker-emoji:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.3);
+}
+
+/* Voice Message */
+.voice-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 180px;
+}
+
+.play-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.waveform {
+  flex: 1;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.bar {
+  flex: 1;
+  height: 40%;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+.bar:nth-child(2n) {
+  height: 70%;
+}
+
+.bar:nth-child(3n) {
+  height: 100%;
+}
+
+.bar:nth-child(4n) {
+  height: 50%;
+}
+
+.playing .bar {
+  animation: wave 1s infinite ease-in-out;
+}
+
+@keyframes wave {
+
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  50% {
+    transform: scaleY(2);
+  }
+}
+
+.bar:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.bar:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.bar:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.bar:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.bar:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+/* Image Message */
+.image-message {
+  max-width: 100%;
+  border-radius: 15px;
+  margin-bottom: 5px;
+  display: block;
 }
 
 .reactions-container {
