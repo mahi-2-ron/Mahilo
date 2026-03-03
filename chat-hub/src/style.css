@@ -7,10 +7,28 @@
   color: #f8fafc;
   background: #0a0a0f;
 
+  /* Theme Tokens */
+  --accent: #6366f1;
+  --accent-glow: rgba(99, 102, 241, 0.4);
+  --gradient: linear-gradient(135deg, #6366f1, #a855f7);
+  --bg-dark: rgba(10, 10, 15, 0.75);
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme="emerald"] {
+  --accent: #10b981;
+  --accent-glow: rgba(16, 185, 129, 0.4);
+  --gradient: linear-gradient(135deg, #10b981, #3b82f6);
+}
+
+[data-theme="sunset"] {
+  --accent: #f59e0b;
+  --accent-glow: rgba(245, 158, 11, 0.4);
+  --gradient: linear-gradient(135deg, #f59e0b, #ef4444);
 }
 
 ::selection {
@@ -137,6 +155,62 @@ body {
 .search-icon {
   opacity: 0.4;
   font-size: 14px;
+}
+
+/* Stories / Status */
+.stories-container {
+  padding: 10px 20px;
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.stories-container::-webkit-scrollbar {
+  display: none;
+}
+
+.story-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.story-ring {
+  width: 58px;
+  height: 58px;
+  border-radius: 22px;
+  padding: 3px;
+  background: var(--gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.story-item:hover .story-ring {
+  transform: scale(1.05);
+}
+
+.story-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 19px;
+  background: #1e293b;
+  border: 2px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.story-name {
+  font-size: 11px;
+  color: #94a3b8;
 }
 
 .user-list {
@@ -784,6 +858,143 @@ body {
   color: #fff;
   border-color: #6366f1;
   transform: translateY(-2px);
+}
+
+/* Right Sidebar / Info Panel */
+.info-sidebar {
+  width: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.1);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.info-sidebar.active {
+  width: 300px;
+}
+
+.info-header {
+  padding: 40px 20px 20px;
+  text-align: center;
+}
+
+.big-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 35px;
+  margin: 0 auto 15px;
+  background: var(--gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 800;
+  box-shadow: 0 15px 30px var(--accent-glow);
+}
+
+.info-details h3 {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.info-details p {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.media-grid {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.media-item {
+  aspect-ratio: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.media-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Message Reply UI */
+.reply-preview {
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 3px solid var(--accent);
+  padding: 10px 15px;
+  border-radius: 0 10px 10px 0;
+  margin-bottom: 15px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.reply-preview.active {
+  display: flex;
+}
+
+.reply-content {
+  font-size: 13px;
+}
+
+.reply-user {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 11px;
+}
+
+.quoted-message {
+  background: rgba(0, 0, 0, 0.15);
+  border-left: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 5px 10px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* Theme Switcher */
+.theme-options {
+  display: flex;
+  gap: 10px;
+  padding: 10px 24px;
+}
+
+.theme-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: 0.2s;
+}
+
+.theme-dot:hover {
+  transform: scale(1.2);
+}
+
+.theme-dot.selected {
+  border-color: #fff;
+}
+
+.dot-default {
+  background: #6366f1;
+}
+
+.dot-emerald {
+  background: #10b981;
+}
+
+.dot-sunset {
+  background: #f59e0b;
 }
 
 .ripple {
