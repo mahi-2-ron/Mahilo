@@ -36,6 +36,57 @@
   --gradient: linear-gradient(135deg, #f59e0b, #ef4444);
 }
 
+[data-theme="sakura"] {
+  --accent: #ec4899;
+  --accent-glow: rgba(236, 72, 153, 0.4);
+  --gradient: linear-gradient(135deg, #ec4899, #f472b6);
+  --bg-dark: rgba(255, 241, 242, 0.85);
+  /* Soft white-pink background */
+  --border: rgba(236, 72, 153, 0.15);
+  --mesh: radial-gradient(at 0% 0%, rgba(236, 72, 153, 0.2) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(244, 114, 182, 0.2) 0px, transparent 50%);
+}
+
+[data-theme="sakura"] body {
+  color: #831843;
+  /* Darker pink for text in light theme */
+}
+
+[data-theme="sakura"] .sidebar {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="sakura"] .message.received {
+  background: rgba(255, 255, 255, 0.8);
+  color: #831843;
+  border-color: rgba(236, 72, 153, 0.1);
+}
+
+[data-theme="sakura"] .sidebar-header h2,
+[data-theme="sakura"] .name,
+[data-theme="sakura"] .active-chat-name {
+  color: #831843;
+}
+
+[data-theme="sakura"] .status,
+[data-theme="sakura"] .chat-status,
+[data-theme="sakura"] .time-stamp {
+  color: #db2777;
+}
+
+[data-theme="sakura"] .input-wrapper {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(236, 72, 153, 0.2);
+}
+
+[data-theme="sakura"] #message-input {
+  color: #831843;
+}
+
+[data-theme="sakura"] #message-input::placeholder {
+  color: rgba(131, 24, 67, 0.5);
+}
+
 ::selection {
   background: rgba(99, 102, 241, 0.3);
   color: #fff;
