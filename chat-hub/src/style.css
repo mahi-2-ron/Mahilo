@@ -36,6 +36,14 @@
   --gradient: linear-gradient(135deg, #f59e0b, #ef4444);
 }
 
+.dot-sunset {
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+}
+
+.dot-sakura {
+  background: linear-gradient(135deg, #ec4899, #f472b6);
+}
+
 [data-theme="sakura"] {
   --accent: #ec4899;
   --accent-glow: rgba(236, 72, 153, 0.4);
