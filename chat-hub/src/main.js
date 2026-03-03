@@ -58,11 +58,8 @@ const getAvatarColor = (name) => {
 };
 
 function renderApp() {
-  const filteredFriends = state.friends.filter(f =>
-    f.name.toLowerCase().includes(state.searchQuery.toLowerCase())
-  );
-
   const activeChat = state.friends.find(f => f.id === state.activeChatId) || state.friends[0] || { name: 'Chat Hub', status: 'No chats', id: 0, members: [] };
+  const filteredFriends = state.friends.filter(f => f.name.toLowerCase().includes(state.searchQuery.toLowerCase()));
 
   document.documentElement.setAttribute('data-theme', state.currentTheme);
 
@@ -75,13 +72,13 @@ function renderApp() {
                <div class="premium-badge">PREMIUM Hub</div>
                <h2>Chat Hub</h2>
              </div>
-             <button class="add-btn ripple" id="add-friend-btn" title="Add New Chat">+</button>
+             <button class="add-btn ripple" id="add-friend-btn" title="Add New Chat"><i class="ph-bold ph-plus"></i></button>
            </div>
         </div>
         
         <div class="search-container">
           <div class="search-wrapper">
-            <span class="search-icon">🔍</span>
+            <i class="ph ph-magnifying-glass search-icon"></i>
             <input type="text" id="sidebar-search" placeholder="Search chats..." value="${state.searchQuery}">
           </div>
         </div>
@@ -89,9 +86,9 @@ function renderApp() {
         <div class="stories-container">
           <div class="story-item">
             <div class="story-ring">
-              <div class="story-avatar story-add">+</div>
+              <div class="story-avatar story-add"><i class="ph ph-plus"></i></div>
             </div>
-            <span class="story-name">Add Story</span>
+            <span class="story-name">Add</span>
           </div>
           ${state.stories.map(s => `
             <div class="story-item">
@@ -117,7 +114,7 @@ function renderApp() {
                   <span class="name">${friend.name}</span>
                   <div style="display: flex; align-items: center; gap: 8px;">
                     <span class="time-stamp">Recently</span>
-                    <button class="remove-btn ripple" data-id="${friend.id}">×</button>
+                    <button class="remove-btn ripple" data-id="${friend.id}"><i class="ph ph-x"></i></button>
                   </div>
                 </div>
                 <span class="status">${friend.status}</span>
@@ -140,7 +137,7 @@ function renderApp() {
               <span class="status">Available</span>
             </div>
           </div>
-          <button class="settings-btn ripple">⚙️</button>
+          <button class="settings-btn ripple"><i class="ph-bold ph-gear"></i></button>
         </div>
       </div>
       
@@ -158,13 +155,11 @@ function renderApp() {
           <div class="header-actions">
             <div class="member-dots">
                ${activeChat.members ? activeChat.members.slice(0, 3).map(m => `
-                 <div class="mini-avatar avatar" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #000; margin-left: -8px; background: ${m.color}">
-                    ${m.name.charAt(0)}
-                 </div>`).join('') : ''}
+                 <div class="mini-avatar" style="background: ${m.color}">${m.name.charAt(0)}</div>`).join('') : ''}
             </div>
-            <button class="header-btn ripple" id="toggle-info">ℹ️</button>
-            <button class="header-btn ripple">📞</button>
-            <button class="header-btn ripple">🎥</button>
+            <button class="header-btn ripple" id="toggle-info"><i class="ph-bold ph-info"></i></button>
+            <button class="header-btn ripple"><i class="ph-bold ph-phone"></i></button>
+            <button class="header-btn ripple"><i class="ph-bold ph-video-camera"></i></button>
           </div>
         </div>
         
@@ -172,7 +167,7 @@ function renderApp() {
            <div class="date-divider"><span>Today</span></div>
           ${state.messages.filter(m => m.chatId === state.activeChatId).map(msg => `
             <div class="message-wrapper ${msg.sender === 'You' ? 'sent' : 'received'}" style="animation: fadeInUp 0.3s ease-out">
-              ${msg.sender !== 'You' ? `<span class="sender-name" style="color: ${msg.color || '#94a3b8'}">${msg.sender}</span>` : ''}
+              ${msg.sender !== 'You' ? `<span class="sender-name" style="color: ${msg.color}">${msg.sender}</span>` : ''}
               <div class="message" data-id="${msg.id}">
                 <div class="reaction-picker">
                    <span class="picker-emoji" data-msg-id="${msg.id}">❤️</span>
@@ -189,33 +184,23 @@ function renderApp() {
                 ` : ''}
                 ${msg.type === 'voice' ? `
                   <div class="voice-message">
-                    <button class="play-btn">▶</button>
-                    <div class="waveform">
-                       <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                       <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                       <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                    </div>
+                    <button class="play-btn"><i class="ph ph-play"></i></button>
+                    <div class="waveform"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
                     <span>${msg.duration}</span>
                   </div>
                 ` : msg.type === 'image' ? `
-                   <img src="${msg.src}" class="image-message" alt="shared image">
+                   <img src="${msg.src}" class="image-message">
                    <div class="text">${msg.text || ''}</div>
                 ` : `
                    <div class="text">${msg.text}</div>
                 `}
                 <div class="message-info">
-                  ${msg.time} 
-                  ${msg.sender === 'You' ? `
-                    <span class="read-receipt seen">✓✓</span>
-                  ` : ''}
+                  ${msg.time} ${msg.sender === 'You' ? `<span class="read-receipt seen"><i class="ph-bold ph-checks"></i></span>` : ''}
                 </div>
               </div>
               <div class="reactions-container">
                 ${Object.entries(msg.reactions || {}).map(([emoji, count]) => `
-                  <div class="reaction ripple" data-emoji="${emoji}" data-msg-id="${msg.id}">
-                    <span>${emoji}</span>
-                    <span class="reaction-count">${count}</span>
-                  </div>
+                  <div class="reaction ripple" data-msg-id="${msg.id}"><span>${emoji}</span> <span class="reaction-count">${count}</span></div>
                 `).join('')}
               </div>
             </div>
@@ -226,23 +211,21 @@ function renderApp() {
           <div class="reply-preview ${state.replyingTo ? 'active' : ''}">
              <div class="reply-content">
                 <div class="reply-user">Replying to ${state.replyingTo?.sender}</div>
-                <div style="opacity: 0.6">${state.replyingTo?.text || 'Voice/Image Contact'}</div>
+                <div style="opacity: 0.6">${state.replyingTo?.text || 'Voice/Image'}</div>
              </div>
-             <button class="remove-btn" id="cancel-reply">×</button>
+             <button class="remove-btn" id="cancel-reply"><i class="ph ph-x"></i></button>
           </div>
           <div class="smart-replies-container" id="smart-replies" style="display: ${state.messages.filter(m => m.chatId === state.activeChatId).length > 8 ? 'none' : 'flex'}">
             ${state.smartReplies.map(reply => `<button class="smart-reply ripple">${reply}</button>`).join('')}
           </div>
           <form class="input-wrapper" id="chat-form">
-            <button type="button" class="action-btn" id="attach-btn" title="Send Image">🖼️</button>
-            <input type="text" placeholder="Message ${activeChat.name}..." id="message-input" autocomplete="off">
-            <button type="button" class="action-btn" id="voice-btn" title="Record Voice">🎤</button>
-            <button type="submit" class="send-btn ripple">
-               <span class="send-icon">↗</span>
-            </button>
+            <button type="button" class="action-btn" id="attach-btn"><i class="ph-bold ph-image"></i></button>
+            <input type="text" placeholder="Type a message..." id="message-input" autocomplete="off">
+            <button type="button" class="action-btn" id="voice-btn"><i class="ph-bold ph-microphone"></i></button>
+            <button type="submit" class="send-btn ripple"><i class="ph-bold ph-paper-plane-tilt"></i></button>
           </form>
         </div>
-        ` : 'Select a Chat'}
+        ` : 'Select a chat'}
       </div>
 
       <div class="info-sidebar ${state.showInfoPanel ? 'active' : ''}">
