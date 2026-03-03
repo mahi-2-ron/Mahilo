@@ -13,6 +13,8 @@
   --gradient: linear-gradient(135deg, #6366f1, #a855f7);
   --bg-dark: rgba(10, 10, 15, 0.75);
 
+  transition: background-color 0.5s ease, color 0.5s ease;
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -177,6 +179,13 @@ body {
   gap: 6px;
   flex-shrink: 0;
   cursor: pointer;
+}
+
+.story-add {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 2px dashed rgba(255, 255, 255, 0.2) !important;
+  color: var(--accent) !important;
+  font-size: 24px !important;
 }
 
 .story-ring {
