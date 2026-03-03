@@ -8,10 +8,21 @@ const state = {
   isTyping: false,
   typingName: '',
   searchQuery: '',
+  showInfoPanel: false,
+  replyingTo: null,
+  currentTheme: 'default',
   smartReplies: ["Sounds good!", "I'll check it out.", "Perfect!", "Can't wait!", "Tell me more."],
+  stories: [
+    { id: 1, name: 'You', avatar: 'MY', color: '#8b5cf6' },
+    { id: 2, name: 'Alex', avatar: 'AR', color: '#3b82f6' },
+    { id: 3, name: 'Sarah', avatar: 'SC', color: '#10b981' },
+    { id: 4, name: 'Maya', avatar: 'MK', color: '#ec4899' },
+    { id: 5, name: 'Jamie', avatar: 'JW', color: '#f59e0b' },
+  ],
   friends: [
     {
       id: 1, name: 'Design Squad', avatarIcon: 'DS', status: '5 active members', isGroup: true,
+      bio: 'Official channel for the design team. No memes allowed except on Fridays.',
       members: [
         { name: 'Alex', color: '#3b82f6', class: 'alex' },
         { name: 'Sarah', color: '#10b981', class: 'sarah' },
@@ -19,10 +30,11 @@ const state = {
         { name: 'Maya', color: '#ec4899', class: 'maya' }
       ]
     },
-    { id: 2, name: 'Alex Rivera', avatarIcon: 'AR', status: 'Online', isGroup: false, members: [{ name: 'Alex', color: '#3b82f6', class: 'alex' }] },
-    { id: 3, name: 'Sarah Chen', avatarIcon: 'SC', status: 'Away', isGroup: false, members: [{ name: 'Sarah', color: '#10b981', class: 'sarah' }] },
+    { id: 2, name: 'Alex Rivera', avatarIcon: 'AR', status: 'Online', isGroup: false, bio: 'Product Designer @ ChatHub. ☕ Coffee and Pixels.', members: [{ name: 'Alex', color: '#3b82f6', class: 'alex' }] },
+    { id: 3, name: 'Sarah Chen', avatarIcon: 'SC', status: 'Away', isGroup: false, bio: 'iOS dev. Building the future one line at a time.', members: [{ name: 'Sarah', color: '#10b981', class: 'sarah' }] },
     {
       id: 4, name: 'Project Alpha', avatarIcon: 'PA', status: '3 members', isGroup: true,
+      bio: 'Highly classified project. Top secret stuff.',
       members: [
         { name: 'Alex', color: '#3b82f6', class: 'alex' },
         { name: 'Jamie', color: '#f59e0b', class: 'jamie' }
@@ -52,6 +64,8 @@ function renderApp() {
 
   const activeChat = state.friends.find(f => f.id === state.activeChatId) || state.friends[0] || { name: 'Chat Hub', status: 'No chats', id: 0, members: [] };
 
+  document.documentElement.setAttribute('data-theme', state.currentTheme);
+
   app.innerHTML = `
     <div class="chat-container">
       <div class="sidebar">
@@ -72,11 +86,22 @@ function renderApp() {
           </div>
         </div>
 
+        <div class="stories-container">
+          ${state.stories.map(s => `
+            <div class="story-item">
+              <div class="story-ring">
+                <div class="story-avatar" style="background: ${s.color}">${s.avatar}</div>
+              </div>
+              <span class="story-name">${s.name}</span>
+            </div>
+          `).join('')}
+        </div>
+
         <div class="user-list">
           ${filteredFriends.map(friend => `
             <div class="user-item ${friend.id === state.activeChatId ? 'active' : ''}" data-id="${friend.id}">
               <div class="avatar-stack">
-                <div class="avatar ${friend.members[0]?.class || ''}" style="background: ${friend.isGroup ? 'linear-gradient(135deg, #6366f1, #a855f7)' : getAvatarColor(friend.name)}">
+                <div class="avatar" style="background: ${friend.isGroup ? 'var(--gradient)' : getAvatarColor(friend.name)}">
                    ${friend.isGroup ? friend.avatarIcon : friend.name.substring(0, 2).toUpperCase()}
                 </div>
                 ${friend.status === 'Online' ? '<div class="online-indicator"></div>' : ''}
@@ -86,7 +111,7 @@ function renderApp() {
                   <span class="name">${friend.name}</span>
                   <div style="display: flex; align-items: center; gap: 8px;">
                     <span class="time-stamp">Recently</span>
-                    <button class="remove-btn ripple" data-id="${friend.id}" title="Remove Chat">×</button>
+                    <button class="remove-btn ripple" data-id="${friend.id}">×</button>
                   </div>
                 </div>
                 <span class="status">${friend.status}</span>
@@ -94,6 +119,13 @@ function renderApp() {
             </div>
           `).join('')}
         </div>
+
+        <div class="theme-options">
+           <div class="theme-dot dot-default ${state.currentTheme === 'default' ? 'selected' : ''}" data-theme="default"></div>
+           <div class="theme-dot dot-emerald ${state.currentTheme === 'emerald' ? 'selected' : ''}" data-theme="emerald"></div>
+           <div class="theme-dot dot-sunset ${state.currentTheme === 'sunset' ? 'selected' : ''}" data-theme="sunset"></div>
+        </div>
+
         <div class="sidebar-footer">
           <div class="current-user">
             <div class="avatar" style="width: 38px; height: 38px; font-size: 14px; background: #8b5cf6">ME</div>
@@ -120,13 +152,13 @@ function renderApp() {
           <div class="header-actions">
             <div class="member-dots">
                ${activeChat.members ? activeChat.members.slice(0, 3).map(m => `
-                 <div class="mini-avatar avatar ${m.class}" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #000; margin-left: -8px; background: ${m.color}">
+                 <div class="mini-avatar avatar" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #000; margin-left: -8px; background: ${m.color}">
                     ${m.name.charAt(0)}
                  </div>`).join('') : ''}
             </div>
+            <button class="header-btn ripple" id="toggle-info">ℹ️</button>
             <button class="header-btn ripple">📞</button>
             <button class="header-btn ripple">🎥</button>
-            <button class="header-btn ripple">⋮</button>
           </div>
         </div>
         
@@ -143,6 +175,12 @@ function renderApp() {
                    <span class="picker-emoji" data-msg-id="${msg.id}">👍</span>
                    <span class="picker-emoji" data-msg-id="${msg.id}">😮</span>
                 </div>
+                ${msg.replyTo ? `
+                   <div class="quoted-message">
+                      <strong>${msg.replyTo.user}</strong><br>
+                      ${msg.replyTo.text.length > 30 ? msg.replyTo.text.substring(0, 30) + '...' : msg.replyTo.text}
+                   </div>
+                ` : ''}
                 ${msg.type === 'voice' ? `
                   <div class="voice-message">
                     <button class="play-btn">▶</button>
@@ -162,9 +200,7 @@ function renderApp() {
                 <div class="message-info">
                   ${msg.time} 
                   ${msg.sender === 'You' ? `
-                    <span class="read-receipt ${msg.status || 'delivered'}">
-                      ${msg.status === 'seen' ? '✓✓' : msg.status === 'delivered' ? '✓✓' : '✓'}
-                    </span>
+                    <span class="read-receipt seen">✓✓</span>
                   ` : ''}
                 </div>
               </div>
@@ -181,7 +217,14 @@ function renderApp() {
         </div>
         
         <div class="input-area">
-          <div class="smart-replies-container" id="smart-replies" style="display: ${state.messages.filter(m => m.chatId === state.activeChatId).length > 6 ? 'none' : 'flex'}">
+          <div class="reply-preview ${state.replyingTo ? 'active' : ''}">
+             <div class="reply-content">
+                <div class="reply-user">Replying to ${state.replyingTo?.sender}</div>
+                <div style="opacity: 0.6">${state.replyingTo?.text || 'Voice/Image Contact'}</div>
+             </div>
+             <button class="remove-btn" id="cancel-reply">×</button>
+          </div>
+          <div class="smart-replies-container" id="smart-replies" style="display: ${state.messages.filter(m => m.chatId === state.activeChatId).length > 8 ? 'none' : 'flex'}">
             ${state.smartReplies.map(reply => `<button class="smart-reply ripple">${reply}</button>`).join('')}
           </div>
           <form class="input-wrapper" id="chat-form">
@@ -193,13 +236,31 @@ function renderApp() {
             </button>
           </form>
         </div>
-        ` : `
-        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.5;">
-           <span style="font-size: 64px; margin-bottom: 20px;">💬</span>
-           <h3>Start a new conversation</h3>
-           <p>Click the + button in the sidebar to add a chat</p>
+        ` : 'Select a Chat'}
+      </div>
+
+      <div class="info-sidebar ${state.showInfoPanel ? 'active' : ''}">
+        <div class="info-header">
+           <div class="big-avatar" style="background: ${activeChat.isGroup ? 'var(--gradient)' : getAvatarColor(activeChat.name)}">
+             ${activeChat.name.charAt(0)}
+           </div>
+           <div class="info-details">
+             <h3>${activeChat.name}</h3>
+             <p>${activeChat.isGroup ? activeChat.status : 'Product Designer'}</p>
+           </div>
         </div>
-        `}
+        <div style="padding: 0 20px;">
+           <h4 style="font-size: 11px; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">About</h4>
+           <p style="font-size: 14px; line-height: 1.5; color: #94a3b8;">${activeChat.bio || 'Official channel for the design team. Join the conversation!'}</p>
+        </div>
+        <div style="margin-top: 30px;">
+           <h4 style="padding: 0 20px; font-size: 11px; color: #475569; margin-bottom: 12px; text-transform: uppercase;">Shared Media</h4>
+           <div class="media-grid">
+              <div class="media-item"><img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=100&q=80"></div>
+              <div class="media-item"><img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=100&q=80"></div>
+              <div class="media-item"><img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=100&q=80"></div>
+           </div>
+        </div>
       </div>
     </div>
   `
@@ -213,6 +274,7 @@ function attachEvents() {
   document.querySelectorAll('.user-item').forEach(item => {
     item.addEventListener('click', () => {
       state.activeChatId = parseInt(item.dataset.id);
+      state.replyingTo = null;
       renderApp();
     });
   });
@@ -259,6 +321,45 @@ function attachEvents() {
     });
   }
 
+  // Info Sidebar Toggle
+  document.querySelector('#toggle-info')?.addEventListener('click', () => {
+    state.showInfoPanel = !state.showInfoPanel;
+    renderApp();
+  });
+
+  // Theme Switching
+  document.querySelectorAll('.theme-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      state.currentTheme = dot.dataset.theme;
+      renderApp();
+    });
+  });
+
+  // Reactions & Reply Shortcut
+  document.querySelectorAll('.message').forEach(msgEl => {
+    msgEl.addEventListener('click', (e) => {
+      const picker = msgEl.querySelector('.reaction-picker');
+      if (picker) {
+        document.querySelectorAll('.reaction-picker').forEach(p => p !== picker && p.classList.remove('active'));
+        picker.classList.toggle('active');
+      }
+    });
+
+    // Right-click to reply
+    msgEl.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      const msgId = parseInt(msgEl.dataset.id);
+      state.replyingTo = state.messages.find(m => m.id === msgId);
+      renderApp();
+    });
+  });
+
+  // Cancel Reply
+  document.querySelector('#cancel-reply')?.addEventListener('click', () => {
+    state.replyingTo = null;
+    renderApp();
+  });
+
   // Send Message
   const form = document.querySelector('#chat-form');
   const input = document.querySelector('#message-input');
@@ -266,33 +367,24 @@ function attachEvents() {
   const sendMessage = (text, type = 'text', additional = {}) => {
     if (!text && type === 'text') return;
 
-    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const newMessage = {
       id: Date.now(),
       chatId: state.activeChatId,
       sender: 'You',
       text,
       type,
-      time,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       status: 'sent',
       reactions: {},
+      replyTo: state.replyingTo ? { user: state.replyingTo.sender, text: state.replyingTo.text || 'Media Contact' } : null,
       ...additional
     };
 
     state.messages.push(newMessage);
+    state.replyingTo = null;
     if (input) input.value = '';
     renderApp();
-
-    // Simulate delievery and seen
-    setTimeout(() => {
-      newMessage.status = 'delivered';
-      renderApp();
-      setTimeout(() => {
-        newMessage.status = 'seen';
-        renderApp();
-        simulateReplies();
-      }, 1500);
-    }, 800);
+    setTimeout(() => simulateReplies(), 1500);
   };
 
   if (form) {
@@ -303,53 +395,30 @@ function attachEvents() {
   }
 
   // Image Upload Mock
-  const attachBtn = document.querySelector('#attach-btn');
-  if (attachBtn) {
-    attachBtn.addEventListener('click', () => {
-      sendMessage('Check this out!', 'image', { src: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80' });
-    });
-  }
+  document.querySelector('#attach-btn')?.addEventListener('click', () => {
+    sendMessage('Look at this workspace!', 'image', { src: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&q=80' });
+  });
 
   // Voice Note Mock
-  const voiceBtn = document.querySelector('#voice-btn');
-  if (voiceBtn) {
-    voiceBtn.addEventListener('click', () => {
-      state.isTyping = true;
-      state.typingName = 'You are recording...';
+  document.querySelector('#voice-btn')?.addEventListener('click', () => {
+    state.isTyping = true;
+    state.typingName = 'You are recording...';
+    renderApp();
+    setTimeout(() => {
+      sendMessage(null, 'voice', { duration: '0:07' });
+      state.isTyping = false;
       renderApp();
-      setTimeout(() => {
-        sendMessage(null, 'voice', { duration: '0:05' });
-        state.isTyping = false;
-        renderApp();
-      }, 2000);
-    });
-  }
-
-  document.querySelectorAll('.smart-reply').forEach(btn => {
-    btn.addEventListener('click', () => {
-      sendMessage(btn.innerText);
-    });
+    }, 2000);
   });
 
-  // Reactions
-  document.querySelectorAll('.message').forEach(msgEl => {
-    msgEl.addEventListener('click', (e) => {
-      const picker = msgEl.querySelector('.reaction-picker');
-      if (picker) {
-        document.querySelectorAll('.reaction-picker').forEach(p => p !== picker && p.classList.remove('active'));
-        picker.classList.toggle('active');
-      }
-    });
-  });
-
+  // Reaction Picker Logic
   document.querySelectorAll('.picker-emoji').forEach(emojiEl => {
     emojiEl.addEventListener('click', (e) => {
       e.stopPropagation();
       const msgId = parseInt(emojiEl.dataset.msgId);
-      const emoji = emojiEl.innerText;
       const msg = state.messages.find(m => m.id === msgId);
       if (msg) {
-        msg.reactions[emoji] = (msg.reactions[emoji] || 0) + 1;
+        msg.reactions[emojiEl.innerText] = (msg.reactions[emojiEl.innerText] || 0) + 1;
         renderApp();
       }
     });
@@ -369,79 +438,31 @@ function attachEvents() {
 function simulateReplies() {
   const activeChat = state.friends.find(f => f.id === state.activeChatId);
   if (!activeChat || !activeChat.members) return;
+  const replier = activeChat.members[Math.floor(Math.random() * activeChat.members.length)];
 
-  const members = activeChat.members.filter(m => m.name !== 'You');
-  if (members.length === 0) return;
-  const replier = members[Math.floor(Math.random() * members.length)];
-
-  const replies = [
-    { typo: "That looks incrdible!", fix: "incredible!" },
-    { typo: "Wait, did we chnage the theme?", fix: "change*" },
-    { text: "Just sent you the feedback. Check your inbox! 📧" },
-    { text: "Great work everyone! 🚀" },
-    { typo: "I'm workin on the assets", fix: "working*" },
-    { text: "Looks good to me! 👍" },
-    { type: 'voice', duration: '0:08' },
-    { typo: "Hvae you tested mobile?", fix: "Have*" },
-    { text: "Perfect. I'll update the board. 📋" }
-  ];
-
-  const selected = replies[Math.floor(Math.random() * replies.length)];
+  state.isTyping = true;
+  state.typingName = replier.name;
+  renderApp();
 
   setTimeout(() => {
-    state.isTyping = true;
-    state.typingName = selected.type === 'voice' ? `${replier.name} is recording...` : replier.name;
-    renderApp();
-
-    const sendFinalMessage = (txt, isCorrection = false, type = 'text', add = {}) => {
-      const msg = {
-        id: Date.now(),
-        chatId: state.activeChatId,
-        sender: replier.name,
-        text: txt,
-        type,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        color: replier.color,
-        senderClass: replier.class,
-        reactions: {},
-        ...add
-      };
-      if (state.activeChatId === msg.chatId) {
-        state.messages.push(msg);
-        state.isTyping = false;
-        renderApp();
-      }
+    const msg = {
+      id: Date.now(),
+      chatId: state.activeChatId,
+      sender: replier.name,
+      text: "This definitely looks like a premium feature! 🚀",
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      color: replier.color,
+      reactions: {}
     };
-
-    if (selected.typo) {
-      setTimeout(() => {
-        sendFinalMessage(selected.typo);
-        setTimeout(() => {
-          state.isTyping = true;
-          state.typingName = replier.name;
-          renderApp();
-          setTimeout(() => {
-            sendFinalMessage(selected.fix);
-          }, 1500);
-        }, 1000);
-      }, selected.typo.length * 50);
-    } else if (selected.type === 'voice') {
-      setTimeout(() => {
-        sendFinalMessage(null, false, 'voice', { duration: selected.duration });
-      }, 3000);
-    } else {
-      setTimeout(() => {
-        sendFinalMessage(selected.text);
-      }, Math.max(selected.text.length * 50, 1500));
-    }
-  }, 1500);
+    state.messages.push(msg);
+    state.isTyping = false;
+    renderApp();
+  }, 2000);
 }
 
 function scrollToBottom() {
-  const container = document.querySelector('#message-container');
-  if (container) {
-    container.scrollTop = container.scrollHeight;
-  }
+  const el = document.querySelector('#message-container');
+  if (el) el.scrollTop = el.scrollHeight;
 }
 
 renderApp();
