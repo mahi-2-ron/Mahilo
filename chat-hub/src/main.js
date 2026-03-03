@@ -87,6 +87,12 @@ function renderApp() {
         </div>
 
         <div class="stories-container">
+          <div class="story-item">
+            <div class="story-ring">
+              <div class="story-avatar story-add">+</div>
+            </div>
+            <span class="story-name">Add Story</span>
+          </div>
           ${state.stories.map(s => `
             <div class="story-item">
               <div class="story-ring">
