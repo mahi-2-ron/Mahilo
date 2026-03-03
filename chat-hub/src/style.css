@@ -208,11 +208,26 @@ body {
   justify-content: center;
   transition: 0.4s cubic-bezier(0.2, 1, 0.2, 1);
   box-shadow: 0 8px 16px -4px var(--accent-glow);
+  animation: pulse-ring 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+@keyframes pulse-ring {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
 }
 
 .story-item:hover .story-ring {
+  animation-play-state: paused;
   transform: translateY(-4px) rotate(3deg);
-  box-shadow: 0 12px 24px -6px var(--accent-glow);
 }
 
 .story-avatar {
@@ -884,21 +899,23 @@ body {
 
 .smart-reply {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: #94a3b8;
   padding: 8px 16px;
-  border-radius: 15px;
+  border-radius: 12px;
   font-size: 13px;
   cursor: pointer;
   white-space: nowrap;
   transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
 }
 
 .smart-reply:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--accent);
   color: #fff;
-  border-color: #6366f1;
+  border-color: transparent;
   transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px var(--accent-glow);
 }
 
 /* Right Sidebar / Info Panel */
