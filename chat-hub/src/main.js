@@ -127,6 +127,7 @@ function renderApp() {
            <div class="theme-dot dot-default ${state.currentTheme === 'default' ? 'selected' : ''}" data-theme="default"></div>
            <div class="theme-dot dot-emerald ${state.currentTheme === 'emerald' ? 'selected' : ''}" data-theme="emerald"></div>
            <div class="theme-dot dot-sunset ${state.currentTheme === 'sunset' ? 'selected' : ''}" data-theme="sunset"></div>
+           <div class="theme-dot dot-sakura ${state.currentTheme === 'sakura' ? 'selected' : ''}" data-theme="sakura"></div>
         </div>
 
         <div class="sidebar-footer">
